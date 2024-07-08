@@ -1,0 +1,220 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+$accent: #ABCDFF;
+$accent_second: #b5d3fd;
+$color: #717171;
+$bg: #EEF9FF;
+$border: #ECECEC;
+
+body {
+    color: $color;
+    font-family: Montserrat, sans-serif;
+    background: $bg;
+}
+
+.fluid-container {
+    padding: 20px;
+    padding-top: 70px;
+}
+
+.search {
+    display: flex;
+    gap: .3rem;
+    width: 250px;
+    align-items: center;
+    padding-right: 7px;
+
+    .icon {
+        color: $accent;
+    }
+
+    input {
+        padding-left: 10px;
+        outline: none;
+        height: 100%;
+        width: 100%;
+        border-radius: 10px;
+    }
+}
+
+.block {
+    background: white;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    border-top-left-radius: 0;
+    position: relative;
+
+    &::before {
+        background: $accent;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        padding: 0 10px;
+        position: absolute;
+        top: -24px;
+        color: white;
+        content: attr(data-title);
+        font-weight: bold;
+        font-size: 16px;
+    }
+}
+
+.item {
+    display: flex;
+    font-size: 14px;
+    border: 1px solid transparent;
+    border-bottom-color: $border;
+
+    &:first-child {
+        border-top-right-radius: 10px;
+    }
+
+    &:last-child {
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px;
+        border-bottom-color: transparent;
+
+        .item__key {
+            border-bottom-left-radius: 8px;
+        }
+    }
+
+    &:focus-within {
+        border-color: $accent;
+
+        .item__key {
+            background: $accent;
+            color: white;
+        }
+    }
+
+    &__key {
+        cursor: pointer;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        width: 30%;
+        border-right: 1px solid $border;
+    }
+
+    &__value {
+        width: 70%;
+
+        textarea {
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            padding: 10px;
+            outline: none;
+            width: 100%;
+            height: 100%;
+            min-height: 40px;
+        }
+    }
+}
+
+.columns {
+    display: flex;
+    gap: 20px;
+
+    .column {
+        width: 100%;
+    }
+}
+
+.header {
+    height: 40px;
+    background: $accent;
+    display: flex;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+
+    &__block {
+        background: white;
+        margin: 5px 0;
+
+        &_rounded {
+            border-radius: 10px;
+        }
+    }
+
+    &__buttons {
+        display: flex;
+        gap: .3rem;
+        padding-right: 20px;
+    }
+
+    &__button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        transition: .1s ease-in-out;
+        cursor: pointer;
+
+        .icon {
+            transition: .1s ease-in-out;
+            color: $accent;
+        }
+
+        &:hover {
+            background: $accent_second;
+
+            .icon {
+                color: white;
+            }
+        }
+    }
+}
+
+.brand {
+    color: $accent;
+    font-size: 18px;
+    font-weight: bold;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    background: white;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+}
+
+.languages {
+    display: flex;
+    cursor: pointer;
+    z-index: 11;
+    padding: 3px;
+    position: fixed;
+    top: 5px;
+    left: 50%;
+    transform: translate(-50%);
+    margin: 0;
+    height: 30px;
+
+    &__item {
+        padding: 0 15px;
+        transition: .1s ease-in-out;
+        height: 100%;
+        border-radius: 7px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+
+        &.active {
+            background: $accent;
+            font-weight: bold;
+            color: white;
+        }
+
+        &:hover {
+            background: #f1f1f1;
+        }
+    }
+}
