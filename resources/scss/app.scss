@@ -208,7 +208,7 @@ body {
         align-items: center;
 
         &.active {
-            background: $accent;
+            background: $accent !important;
             font-weight: bold;
             color: white;
         }

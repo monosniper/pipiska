@@ -5,16 +5,33 @@ namespace App\Livewire;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Lang;
+use LaravelLang\LocaleList\Locale;
 use Livewire\Component;
+use LaravelLang\Translator\Services\Translate as Translator;
 
 class Translate extends Component
 {
     public Collection $initialItems;
     public Collection $items;
+    public Collection $currentItems;
     public Collection $filteredItems;
     public string $language = 'ru';
     public string $search = '';
     public string $translateFile = 'test_validation';
+    private Translator $translator;
+
+    const locales = [
+        'ru' => Locale::Russian,
+        'en' => Locale::English,
+        'uz' => Locale::UzbekLatin,
+    ];
+
+    public function boot(
+        Translator $translator,
+    ): void
+    {
+        $this->translator = $translator;
+    }
 
     public function mount(): void
     {
@@ -29,6 +46,10 @@ class Translate extends Component
             'en' => $this->chunk($data['en']),
             'uz' => $this->chunk($data['uz']),
         ]);
+
+        $this->items = $this->initialItems;
+        $this->currentItems = $this->items[$this->language];
+        $this->filteredItems = $this->currentItems;
     }
 
     public function chunk($collection)
@@ -36,16 +57,36 @@ class Translate extends Component
         return $collection->chunk(ceil($collection->count() / 3));
     }
 
-    public function render(): View
+    public function revert(): void
     {
-        $this->items = $this->initialItems;
+        $this->items[$this->language] = $this->initialItems[$this->language];
+    }
 
+    public function translate(): void
+    {
+        foreach($this->currentItems as $col => $group) {
+            foreach($group as $name => $keys) {
+                $this->currentItems[$name] = $this->translator->viaGoogle(
+                    $this->items['ru'][$col][$name],
+                    self::locales[$this->language]
+                );
+            }
+        }
+    }
+
+    public function updatedLanguage(): void
+    {
+        $this->currentItems = $this->items[$this->language];
+    }
+
+    public function updatedSearch(): void
+    {
         if (empty($this->search)) {
-            $this->filteredItems = $this->items[$this->language];
+            $this->filteredItems = $this->currentItems;
         } else {
             $items = [];
 
-            foreach($this->initialItems[$this->language] as $group) {
+            foreach($this->currentItems as $group) {
                 foreach($group as $name => $keys) {
                     foreach($keys as $k => $v) {
                         if(stristr($k, $this->search) || stristr($v, $this->search) || stristr($name, $this->search)) {
@@ -58,7 +99,10 @@ class Translate extends Component
 
             $this->filteredItems = $this->chunk(collect($items));
         }
+    }
 
+    public function render(): View
+    {
         return view('livewire.translate');
     }
 }
