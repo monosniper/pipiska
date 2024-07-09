@@ -14,7 +14,7 @@
                 @include('inc.icon', ['name' => 'search'])
             </label>
             @if($language !== 'ru')
-                <div wire:click="translate" class="header__block header__block_rounded header__button">
+                <div id="translate" class="header__block header__block_rounded header__button">
                     @if($loading)
                         <span class="loader"></span>
                     @else
@@ -91,6 +91,12 @@
                     @this.set('language', item.getAttribute('data-lang'));
                 }
             })
+        });
+
+        document.querySelector('#translate').addEventListener('click', () => {
+            @this.set('loading', true);
+            @this.translate()
+            setTimeout(() => @this.set('loading', false), 5000)
         });
     </script>
 </div>

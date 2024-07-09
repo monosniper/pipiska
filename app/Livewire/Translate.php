@@ -59,8 +59,6 @@ class Translate extends Component
 
     public function translate(): void
     {
-        $this->loading = true;
-
         foreach($this->currentItems as $col => $group) {
             foreach($group as $name => $keys) {
                 $this->items[$this->language][$col][$name] = $this->translator->viaGoogle(
@@ -69,8 +67,6 @@ class Translate extends Component
                 );
             }
         }
-
-        $this->loading = false;
     }
 
     public function updatedLanguage(): void
