@@ -20,12 +20,6 @@ class Translate extends Component
     public string $translateFile = 'test_validation';
     private Translator $translator;
 
-    const locales = [
-        'ru' => Locale::Russian,
-        'en' => Locale::English,
-        'uz' => Locale::UzbekLatin,
-    ];
-
     public function boot(
         Translator $translator,
     ): void
@@ -68,7 +62,7 @@ class Translate extends Component
             foreach($group as $name => $keys) {
                 $this->items[$this->language][$col][$name] = $this->translator->viaGoogle(
                     $this->items['ru'][$col][$name],
-                    self::locales[$this->language]
+                    $this->language
                 );
             }
         }
