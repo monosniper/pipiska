@@ -100,7 +100,7 @@
         document.querySelector('#translate').addEventListener('click', () => {
             @this.set('loading', true);
             @this.translate()
-            
+
             stopLoading()
         });
     </script>
