@@ -137,6 +137,7 @@ body {
     z-index: 10;
 
     &__disable {
+        display: none;
         position: absolute;
         top: 0;
         right: 0;
@@ -231,13 +232,13 @@ body {
 }
 
 .loader {
+    display: none;
     width: 60%;
     height: 60%;
     margin: auto;
     border: 1px solid $accent;
     border-bottom-color: transparent;
     border-radius: 50%;
-    display: inline-block;
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
 }

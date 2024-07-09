@@ -1,8 +1,6 @@
 <div>
     <header class="header">
-        @if($loading)
-            <div class="header__disable"></div>
-        @endif
+        <div class="header__disable"></div>
 
         <div class="header__item brand">
             Kirano Translate | {{ config('app.name') }}
@@ -13,15 +11,14 @@
                 <input wire:model.live="search" placeholder="Поиск..." id="search" type="search">
                 @include('inc.icon', ['name' => 'search'])
             </label>
-            @if($language !== 'ru')
-                <div id="translate" class="header__block header__block_rounded header__button">
-                    @if($loading)
-                        <span class="loader"></span>
-                    @else
-                        @include('inc.icon', ['name' => 'translate'])
-                    @endif
-                </div>
-            @endif
+            <div
+                style="display: {{ $language !== 'ru' ? 'flex' : 'none' }}"
+                id="js-translate"
+                class="header__block header__block_rounded header__button"
+            >
+                <span class="loader"></span>
+                @include('inc.icon', ['name' => 'translate'])
+            </div>
             <div wire:click="revert" class="header__block header__block_rounded header__button">
                 @include('inc.icon', ['name' => 'revert'])
             </div>
@@ -93,15 +90,21 @@
             })
         });
 
+        const header__disabled = document.querySelector('.header__disable');
+        const translate = document.querySelector('#js-translate');
+
         const stopLoading = () => {
-            setTimeout(() => @this.set('loading', false), 5000)
+            header__disabled.style.display = 'none'
+            translate.querySelector('.loader').style.display = 'none'
+            translate.querySelector('svg').style.display = 'block'
         }
+        console.log(translate)
+        translate.addEventListener('click', () => {
+            header__disabled.style.display = 'block'
+            translate.querySelector('.loader').style.display = 'inline-block'
+            translate.querySelector('svg').style.display = 'none'
 
-        document.querySelector('#translate').addEventListener('click', () => {
-            @this.set('loading', true);
-            @this.translate()
-
-            stopLoading()
+            @this.translate().then(stopLoading);
         });
     </script>
 </div>
