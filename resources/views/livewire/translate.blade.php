@@ -93,10 +93,15 @@
             })
         });
 
+        const stopLoading = () => {
+            setTimeout(() => @this.set('loading', false), 5000)
+        }
+
         document.querySelector('#translate').addEventListener('click', () => {
             @this.set('loading', true);
             @this.translate()
-            setTimeout(() => @this.set('loading', false), 5000)
+            
+            stopLoading()
         });
     </script>
 </div>
