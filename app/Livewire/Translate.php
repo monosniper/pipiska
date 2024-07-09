@@ -17,6 +17,7 @@ class Translate extends Component
     public Collection $filteredItems;
     public string $language = 'ru';
     public string $search = '';
+    public bool $loading = false;
     public string $translateFile = 'test_validation';
     private Translator $translator;
 
@@ -58,6 +59,8 @@ class Translate extends Component
 
     public function translate(): void
     {
+        $this->loading = true;
+
         foreach($this->currentItems as $col => $group) {
             foreach($group as $name => $keys) {
                 $this->items[$this->language][$col][$name] = $this->translator->viaGoogle(
@@ -66,6 +69,8 @@ class Translate extends Component
                 );
             }
         }
+
+        $this->loading = false;
     }
 
     public function updatedLanguage(): void

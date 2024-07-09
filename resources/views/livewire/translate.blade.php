@@ -1,5 +1,9 @@
 <div>
     <header class="header">
+        @if($loading)
+            <div class="header__disable"></div>
+        @endif
+
         <div class="header__item brand">
             Kirano Translate | {{ config('app.name') }}
         </div>
@@ -10,8 +14,12 @@
                 @include('inc.icon', ['name' => 'search'])
             </label>
             @if($language !== 'ru')
-                <div wire:transition wire:click="translate" class="header__block header__block_rounded header__button">
-                    @include('inc.icon', ['name' => 'translate'])
+                <div wire:click="translate" class="header__block header__block_rounded header__button">
+                    @if($loading)
+                        <span class="loader"></span>
+                    @else
+                        @include('inc.icon', ['name' => 'translate'])
+                    @endif
                 </div>
             @endif
             <div wire:click="revert" class="header__block header__block_rounded header__button">
@@ -21,13 +29,13 @@
                 @include('inc.icon', ['name' => 'check'])
             </div>
         </div>
-    </header>
 
-    <div class="header__block_rounded header__block languages">
-        <div data-lang="ru" @class(['languages__item', $language === 'ru' ? 'active' : ''])>Русский</div>
-        <div data-lang="en" @class(['languages__item', $language === 'en' ? 'active' : ''])>English</div>
-        <div data-lang="uz" @class(['languages__item', $language === 'uz' ? 'active' : ''])>Uzbek</div>
-    </div>
+        <div class="header__block_rounded header__block languages">
+            <div data-lang="ru" @class(['languages__item', $language === 'ru' ? 'active' : ''])>Русский</div>
+            <div data-lang="en" @class(['languages__item', $language === 'en' ? 'active' : ''])>English</div>
+            <div data-lang="uz" @class(['languages__item', $language === 'uz' ? 'active' : ''])>Uzbek</div>
+        </div>
+    </header>
 
     <div class="fluid-container columns">
         @foreach($currentItems as $col => $groups)
@@ -41,31 +49,27 @@
                                         <div class="item" >
                                             <label for="{{ $name . '.' . $key }}" class="item__key">{{ $key }}</label>
                                             <div class="item__value">
-{{--                                                @if($language === 'ru')--}}
-{{--                                                    --}}
-{{--                                                @elseif($language === 'en')--}}
-{{--                                                    --}}
-{{--                                                @elseif($language === 'uz')--}}
-{{--                                                    --}}
-{{--                                                @endif--}}
-                                                    <textarea
-                                                        style="display: {{ $language === 'ru' ? 'block' : 'none' }}"
-                                                        wire:model.live="items.ru.{{ $col }}.{{ $name }}.{{ $key }}"
-                                                        name="{{ $name . '.' . $key }}"
-                                                        id="{{ $name . '.' . $key }}"
-                                                    ></textarea>
-                                                    <textarea
-                                                        style="display: {{ $language === 'en' ? 'block' : 'none' }}"
-                                                        wire:model.live="items.en.{{ $col }}.{{ $name }}.{{ $key }}"
-                                                        name="{{ $name . '.' . $key }}"
-                                                        id="{{ $name . '.' . $key }}"
-                                                    ></textarea>
-                                                    <textarea
-                                                        style="display: {{ $language === 'uz' ? 'block' : 'none' }}"
-                                                        wire:model.live="items.uz.{{ $col }}.{{ $name }}.{{ $key }}"
-                                                        name="{{ $name . '.' . $key }}"
-                                                        id="{{ $name . '.' . $key }}"
-                                                    ></textarea>
+                                                <textarea
+                                                    @disabled($loading)
+                                                    style="display: {{ $language === 'ru' ? 'block' : 'none' }}"
+                                                    wire:model.live="items.ru.{{ $col }}.{{ $name }}.{{ $key }}"
+                                                    name="{{ $name . '.' . $key }}"
+                                                    id="{{ $name . '.' . $key }}"
+                                                ></textarea>
+                                                <textarea
+                                                    @disabled($loading)
+                                                    style="display: {{ $language === 'en' ? 'block' : 'none' }}"
+                                                    wire:model.live="items.en.{{ $col }}.{{ $name }}.{{ $key }}"
+                                                    name="{{ $name . '.' . $key }}"
+                                                    id="{{ $name . '.' . $key }}"
+                                                ></textarea>
+                                                <textarea
+                                                    @disabled($loading)
+                                                    style="display: {{ $language === 'uz' ? 'block' : 'none' }}"
+                                                    wire:model.live="items.uz.{{ $col }}.{{ $name }}.{{ $key }}"
+                                                    name="{{ $name . '.' . $key }}"
+                                                    id="{{ $name . '.' . $key }}"
+                                                ></textarea>
                                             </div>
                                         </div>
                                     @endisset
