@@ -104,6 +104,9 @@
             translate.querySelector('.loader').style.display = 'inline-block'
             translate.querySelector('svg').style.display = 'none'
 
+            document.querySelectorAll('textarea')
+                .forEach(textarea => textarea.setAttribute('disabled', true))
+
             @this.translate().then(stopLoading);
         });
     </script>
