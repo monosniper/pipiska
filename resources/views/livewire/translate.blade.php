@@ -2,8 +2,23 @@
     <header class="header">
         <div class="header__disable"></div>
 
-        <div class="header__item brand">
-            Kirano Translate | {{ config('app.name') }}
+        <div class="header__item">
+            <div class="brand">
+                Kirano Translate | {{ config('app.name') }}
+            </div>
+            <div class="pages">
+                <div class="dropdown header__block_rounded">
+                    <div class="select">
+                        <span>{{ $pageName }}</span>
+                        <i class="fa fa-chevron-left"></i>
+                    </div>
+                    <ul class="dropdown-menu">
+                        @foreach(config($config . '.pages', []) as $p => $n)
+                            <li id="{{ $p }}">{{ $n }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div class="header__item header__block_rounded header__buttons">
@@ -22,7 +37,7 @@
             <div wire:click="revert" class="header__block header__block_rounded header__button">
                 @include('inc.icon', ['name' => 'revert'])
             </div>
-            <div class="header__block header__block_rounded header__button">
+            <div wire:click="save" class="header__block header__block_rounded header__button">
                 @include('inc.icon', ['name' => 'check'])
             </div>
         </div>
@@ -40,7 +55,7 @@
                 <div class="column">
                     @foreach($groups as $name => $group)
                         @isset($filteredItems[$col][$name])
-                            <div data-title="{{ $name }}" class="block" >
+                            <div data-title="{{ config($config.'.translations.'.$name, $name) }}" class="block">
                                 @foreach($group as $key => $value)
                                     @isset($filteredItems[$col][$name][$key])
                                         <div class="item" >
@@ -49,21 +64,21 @@
                                                 <textarea
                                                     @disabled($loading)
                                                     style="display: {{ $language === 'ru' ? 'block' : 'none' }}"
-                                                    wire:model.live="items.ru.{{ $col }}.{{ $name }}.{{ $key }}"
+                                                    wire:model.live="items.{{ $page }}.ru.{{ $col }}.{{ $name }}.{{ $key }}"
                                                     name="{{ $name . '.' . $key }}"
                                                     id="{{ $name . '.' . $key }}"
                                                 ></textarea>
                                                 <textarea
                                                     @disabled($loading)
                                                     style="display: {{ $language === 'en' ? 'block' : 'none' }}"
-                                                    wire:model.live="items.en.{{ $col }}.{{ $name }}.{{ $key }}"
+                                                    wire:model.live="items.{{ $page }}.en.{{ $col }}.{{ $name }}.{{ $key }}"
                                                     name="{{ $name . '.' . $key }}"
                                                     id="{{ $name . '.' . $key }}"
                                                 ></textarea>
                                                 <textarea
                                                     @disabled($loading)
                                                     style="display: {{ $language === 'uz' ? 'block' : 'none' }}"
-                                                    wire:model.live="items.uz.{{ $col }}.{{ $name }}.{{ $key }}"
+                                                    wire:model.live="items.{{ $page }}.uz.{{ $col }}.{{ $name }}.{{ $key }}"
                                                     name="{{ $name . '.' . $key }}"
                                                     id="{{ $name . '.' . $key }}"
                                                 ></textarea>
@@ -80,34 +95,68 @@
     </div>
 
     <script>
-        document.querySelectorAll('.languages__item').forEach(item => {
-            item.addEventListener('click', () => {
-                if(!item.classList.contains('active')) {
-                    document.querySelector('.languages__item.active').classList.remove('active')
-                    item.classList.add('active')
-                    @this.set('language', item.getAttribute('data-lang'));
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const header__disabled = document.querySelector('.header__disable');
+            const translate = document.querySelector('#js-translate');
+            const dropdown = document.querySelector('.dropdown');
+            const menu = dropdown.querySelector('.dropdown-menu')
+
+            document.querySelectorAll('.languages__item').forEach(item => {
+                item.addEventListener('click', () => {
+                    if(!item.classList.contains('active')) {
+                        document.querySelector('.languages__item.active').classList.remove('active')
+                        item.classList.add('active')
+                        @this.set('language', item.getAttribute('data-lang'));
+                    }
+                })
+            });
+
+            const stopLoading = () => {
+                header__disabled.style.display = 'none'
+                translate.querySelector('.loader').style.display = 'none'
+                translate.querySelector('svg').style.display = 'block'
+            }
+
+            translate.addEventListener('click', () => {
+                header__disabled.style.display = 'block'
+                translate.querySelector('.loader').style.display = 'inline-block'
+                translate.querySelector('svg').style.display = 'none'
+
+                document.querySelectorAll('textarea')
+                    .forEach(textarea => textarea.setAttribute('disabled', true))
+
+                @this.translate().then(stopLoading);
+            });
+
+            dropdown.addEventListener('click', () => {
+                dropdown.setAttribute('tabindex', 1);
+                dropdown.focus();
+
+                dropdown.classList.toggle('active')
+
+                if (menu.classList.contains('dropdown-menu--active')) {
+                    menu.classList.remove('dropdown-menu--active');
+                    menu.style.maxHeight = 0;
+                } else {
+                    menu.classList.add('dropdown-menu--active');
+                    menu.style.maxHeight = menu.scrollHeight + 'px';
                 }
             })
-        });
 
-        const header__disabled = document.querySelector('.header__disable');
-        const translate = document.querySelector('#js-translate');
+            dropdown.addEventListener('focusout', () => {
+                dropdown.classList.remove('active')
+                menu.classList.remove('dropdown-menu--active');
+                menu.style.maxHeight = 0;
+            })
 
-        const stopLoading = () => {
-            header__disabled.style.display = 'none'
-            translate.querySelector('.loader').style.display = 'none'
-            translate.querySelector('svg').style.display = 'block'
-        }
-        console.log(translate)
-        translate.addEventListener('click', () => {
-            header__disabled.style.display = 'block'
-            translate.querySelector('.loader').style.display = 'inline-block'
-            translate.querySelector('svg').style.display = 'none'
+            dropdown.querySelectorAll('.dropdown-menu li').forEach(li => {
+                li.addEventListener('click', () => {
+                    dropdown.querySelector('span').innerText = li.innerText
+                    @this.set('page', li.getAttribute('id'));
+                })
+            })
 
-            document.querySelectorAll('textarea')
-                .forEach(textarea => textarea.setAttribute('disabled', true))
-
-            @this.translate().then(stopLoading);
-        });
+        })
     </script>
 </div>
