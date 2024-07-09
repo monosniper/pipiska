@@ -66,7 +66,7 @@ class Translate extends Component
     {
         foreach($this->currentItems as $col => $group) {
             foreach($group as $name => $keys) {
-                $this->currentItems[$col][$name] = $this->translator->viaGoogle(
+                $this->items[$this->language][$col][$name] = $this->translator->viaGoogle(
                     $this->items['ru'][$col][$name],
                     self::locales[$this->language]
                 );
