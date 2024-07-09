@@ -3,6 +3,5 @@
 use App\Livewire\Translate;
 use Illuminate\Support\Facades\Route;
 
-Route::domain('translate.'.config('app.url'))->group(function () {
-    Route::get('/', Translate::class);
-});
+Route::get('translate', Translate::class);
+Route::get('/', Translate::class)->domain('translate.'.config('app.url'));
