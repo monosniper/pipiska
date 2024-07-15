@@ -2,10 +2,8 @@
 
 return [
     'pages' => [
-        'auth' => 'Авторизация',
-        'pagination' => 'Пагинация',
-        'passwords' => 'Пароли',
-        'test_validation' => 'Тест Авторизация',
+        'messages' => 'Сообщения',
+        'auth' => 'Auth',
     ],
 
     'groups' => [

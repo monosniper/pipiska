@@ -71,9 +71,11 @@ class Translate extends Component
     {
         $new_array = [];
 
-        foreach ($array as $key => $value) {
-            if(is_array($value)) $new_array[$key] = $value;
-            else $new_array[$this->main_key][$key] = $value;
+        if(is_array($array)) {
+            foreach ($array as $key => $value) {
+                if(is_array($value)) $new_array[$key] = $value;
+                else $new_array[$this->main_key][$key] = $value;
+            }
         }
 
         return $new_array;

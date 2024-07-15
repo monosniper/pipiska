@@ -1,0 +1,3 @@
+[submodule "packages/monosniper/laravel-translate"]
+	path = packages/monosniper/laravel-translate
+	url = git@github.com:monosniper/laravel-translate.git
