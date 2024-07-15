@@ -14,7 +14,7 @@ class Translate extends Component
     public Collection $items;
     public Collection $currentItems;
     public Collection $filteredItems;
-    public string $language = 'ru';
+    public string $language;
     public string $search = '';
     public string $config = 'kirano_translate';
     public string $page;
@@ -32,11 +32,14 @@ class Translate extends Component
 
     public function mount(): void
     {
+        $this->language = $this->getConfig('default_lang');
         if(empty($this->getConfig('pages', []))) abort(400);
 
         $this->initialItems = collect();
-        $this->page = array_keys($this->getConfig('pages', []))[0];
-        $this->pageName = array_values($this->getConfig('pages', []))[0];
+
+        $page_index = array_search($this->getConfig('default_page'), array_keys($this->getConfig('pages', [])));
+        $this->page = array_keys($this->getConfig('pages', []))[$page_index];
+        $this->pageName = array_values($this->getConfig('pages', []))[$page_index];
 
         $data = [];
 
@@ -86,7 +89,7 @@ class Translate extends Component
         foreach($this->currentItems as $col => $group) {
             foreach($group as $name => $keys) {
                 $this->items[$this->page][$this->language][$col][$name] = $this->translator->viaGoogle(
-                    $this->items[$this->page]['ru'][$col][$name],
+                    $this->items[$this->page][$this->getConfig('auto_translate.from')][$col][$name],
                     $this->language
                 );
             }
@@ -132,7 +135,7 @@ class Translate extends Component
 
         $content .= "];";
 
-        file_put_contents(base_path()."/lang/$this->language/$this->page.php", $content);
+        file_put_contents(base_path() . "/" . $this->getConfig('lang_dir') . "/$this->language/$this->page.php", $content);
     }
 
     public function updatedSearch(): void

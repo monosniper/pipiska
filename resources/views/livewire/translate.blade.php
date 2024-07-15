@@ -27,16 +27,19 @@
                 @include('inc.icon', ['name' => 'search'])
             </label>
             <div
-                style="display: {{ $language !== 'ru' ? 'flex' : 'none' }}"
+                style="display: {{ (!in_array($language, $this->getConfig('auto_translate.exclude_languages'))
+                && !in_array($page, $this->getConfig('auto_translate.exclude_pages'))) ? 'flex' : 'none' }}"
                 id="js-translate"
                 class="header__block header__block_rounded header__button"
             >
                 <span class="loader"></span>
                 @include('inc.icon', ['name' => 'translate'])
             </div>
-            <div wire:click="revert" class="header__block header__block_rounded header__button">
-                @include('inc.icon', ['name' => 'revert'])
-            </div>
+            @if($this->getConfig('can_revert'))
+                <div wire:click="revert" class="header__block header__block_rounded header__button">
+                    @include('inc.icon', ['name' => 'revert'])
+                </div>
+            @endif
             <div wire:click="save" class="header__block header__block_rounded header__button">
                 @include('inc.icon', ['name' => 'check'])
             </div>
@@ -55,7 +58,7 @@
                 <div class="column">
                     @foreach($groups as $name => $group)
                         @isset($filteredItems[$col][$name])
-                            <div data-title="{{ config($config.'.translations.'.$name, $name) }}" class="block">
+                            <div data-title="{{ config($config.'.groups.'.$name, $name) }}" class="block">
                                 @foreach($group as $key => $value)
                                     @isset($filteredItems[$col][$name][$key])
                                         <div class="item" >
@@ -98,9 +101,9 @@
         document.addEventListener('DOMContentLoaded', () => {
 
             const header__disabled = document.querySelector('.header__disable');
-            const translate = document.querySelector('#js-translate');
             const dropdown = document.querySelector('.dropdown');
             const menu = dropdown.querySelector('.dropdown-menu')
+            const translate = document.querySelector('#js-translate');
 
             document.querySelectorAll('.languages__item').forEach(item => {
                 item.addEventListener('click', () => {
@@ -126,8 +129,8 @@
                 document.querySelectorAll('textarea')
                     .forEach(textarea => textarea.setAttribute('disabled', true))
 
-                @this.translate().then(stopLoading);
-            });
+                @this.translate().finally(() => stopLoading(translate));
+            })
 
             dropdown.addEventListener('click', () => {
                 dropdown.setAttribute('tabindex', 1);
@@ -159,4 +162,30 @@
 
         })
     </script>
+
+    <style>
+        body {
+            background: {{ $this->getConfig('theme.background') }};
+            color: {{ $this->getConfig('theme.text') }};
+        }
+
+        .header, .languages__item.active {
+            background: {{ $this->getConfig('theme.accent') }} !important;
+        }
+
+        .item:focus-within .item__key {
+            background: {{ $this->getConfig('theme.accent') }};
+            color: {{ $this->getConfig('theme.group_text') }};
+        }
+
+        .item__key {
+            background: {{ $this->getConfig('theme.field_background') }};
+            color: {{ $this->getConfig('theme.field_color') }};
+        }
+
+        textarea {
+            background: {{ $this->getConfig('theme.field_background') }};
+            color: {{ $this->getConfig('theme.field_text') }};
+        }
+    </style>
 </div>
