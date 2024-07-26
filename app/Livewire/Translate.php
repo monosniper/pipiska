@@ -164,6 +164,8 @@ class Translate extends Component
 
     public function render(): View
     {
+        $this->dispatch('resize-textarea');
+
         return view('livewire.translate');
     }
 }

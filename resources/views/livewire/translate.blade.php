@@ -72,21 +72,63 @@
                                             <div class="item__value">
                                                 <textarea
                                                     @disabled($loading)
-                                                    style="display: {{ $language === 'ru' ? 'block' : 'none' }}"
+                                                    @class([$language === 'ru' ? '' : 'd-none'])
+                                                    rows="1"
+                                                    x-init="$nextTick(() => resize())"
+                                                    x-data="{
+                                                        resize() {
+                                                            $el.style.height = 'auto';
+                                                            $el.style.height = $el.scrollHeight + 'px';
+                                                        }
+                                                    }"
+                                                    @input="resize()"
+                                                    x-on:resize-textarea.window="
+                                                        setTimeout(() => {
+                                                            resize();
+                                                        }, 10);
+                                                    "
                                                     wire:model.live="items.{{ $page }}.ru.{{ $col }}.{{ $name }}.{{ $key }}"
                                                     name="{{ $name . '.' . $key }}"
                                                     id="{{ $name . '.' . $key }}"
                                                 ></textarea>
                                                 <textarea
                                                     @disabled($loading)
-                                                    style="display: {{ $language === 'en' ? 'block' : 'none' }}"
+                                                    @class([$language === 'en' ? '' : 'd-none'])
+                                                    rows="1"
+                                                    x-init="$nextTick(() => resize())"
+                                                    x-data="{
+                                                        resize() {
+                                                            $el.style.height = 'auto';
+                                                            $el.style.height = $el.scrollHeight + 'px';
+                                                        }
+                                                    }"
+                                                    x-on:resize-textarea.window="
+                                                        setTimeout(() => {
+                                                            resize();
+                                                        }, 10);
+                                                    "
+                                                    @input="resize()"
                                                     wire:model.live="items.{{ $page }}.en.{{ $col }}.{{ $name }}.{{ $key }}"
                                                     name="{{ $name . '.' . $key }}"
                                                     id="{{ $name . '.' . $key }}"
                                                 ></textarea>
                                                 <textarea
                                                     @disabled($loading)
-                                                    style="display: {{ $language === 'uz' ? 'block' : 'none' }}"
+                                                    rows="1"
+                                                    @class([$language === 'uz' ? '' : 'd-none'])
+                                                    x-init="$nextTick(() => resize())"
+                                                    x-data="{
+                                                        resize() {
+                                                            $el.style.height = 'auto';
+                                                            $el.style.height = $el.scrollHeight + 'px';
+                                                        }
+                                                    }"
+                                                    x-on:resize-textarea.window="
+                                                        setTimeout(() => {
+                                                            resize();
+                                                        }, 100);
+                                                    "
+                                                    @input="resize()"
                                                     wire:model.live="items.{{ $page }}.uz.{{ $col }}.{{ $name }}.{{ $key }}"
                                                     name="{{ $name . '.' . $key }}"
                                                     id="{{ $name . '.' . $key }}"
@@ -103,72 +145,69 @@
         @endforeach
     </div>
 
+    @script
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        const header__disabled = document.querySelector('.header__disable');
+        const dropdown = document.querySelector('.dropdown');
+        const menu = dropdown.querySelector('.dropdown-menu')
+        const translate = document.querySelector('#js-translate');
 
-            const header__disabled = document.querySelector('.header__disable');
-            const dropdown = document.querySelector('.dropdown');
-            const menu = dropdown.querySelector('.dropdown-menu')
-            const translate = document.querySelector('#js-translate');
-
-            document.querySelectorAll('.languages__item').forEach(item => {
-                item.addEventListener('click', () => {
-                    if(!item.classList.contains('active')) {
-                        document.querySelector('.languages__item.active').classList.remove('active')
-                        item.classList.add('active')
-                        @this.set('language', item.getAttribute('data-lang'));
-                    }
-                })
-            });
-
-            const stopLoading = () => {
-                header__disabled.style.display = 'none'
-                translate.querySelector('.loader').style.display = 'none'
-                translate.querySelector('svg').style.display = 'block'
-            }
-
-            translate.addEventListener('click', () => {
-                header__disabled.style.display = 'block'
-                translate.querySelector('.loader').style.display = 'inline-block'
-                translate.querySelector('svg').style.display = 'none'
-
-                document.querySelectorAll('textarea')
-                    .forEach(textarea => textarea.setAttribute('disabled', true))
-
-                @this.translate().finally(() => stopLoading(translate));
-            })
-
-            dropdown.addEventListener('click', () => {
-                dropdown.setAttribute('tabindex', 1);
-                dropdown.focus();
-
-                dropdown.classList.toggle('active')
-
-                if (menu.classList.contains('dropdown-menu--active')) {
-                    menu.classList.remove('dropdown-menu--active');
-                    menu.style.maxHeight = 0;
-                } else {
-                    menu.classList.add('dropdown-menu--active');
-                    menu.style.maxHeight = menu.scrollHeight + 'px';
+        document.querySelectorAll('.languages__item').forEach(item => {
+            item.addEventListener('click', () => {
+                if(!item.classList.contains('active')) {
+                    document.querySelector('.languages__item.active').classList.remove('active')
+                    item.classList.add('active')
+                    @this.set('language', item.getAttribute('data-lang'));
                 }
             })
+        });
 
-            dropdown.addEventListener('focusout', () => {
-                dropdown.classList.remove('active')
+        const stopLoading = () => {
+            header__disabled.style.display = 'none'
+            translate.querySelector('.loader').style.display = 'none'
+            translate.querySelector('svg').style.display = 'block'
+        }
+
+        translate.addEventListener('click', () => {
+            header__disabled.style.display = 'block'
+            translate.querySelector('.loader').style.display = 'inline-block'
+            translate.querySelector('svg').style.display = 'none'
+
+            document.querySelectorAll('textarea')
+                .forEach(textarea => textarea.setAttribute('disabled', true))
+
+            @this.translate().finally(() => stopLoading(translate));
+        })
+
+        dropdown.addEventListener('click', () => {
+            dropdown.setAttribute('tabindex', 1);
+            dropdown.focus();
+
+            dropdown.classList.toggle('active')
+
+            if (menu.classList.contains('dropdown-menu--active')) {
                 menu.classList.remove('dropdown-menu--active');
                 menu.style.maxHeight = 0;
-            })
+            } else {
+                menu.classList.add('dropdown-menu--active');
+                menu.style.maxHeight = menu.scrollHeight + 'px';
+            }
+        })
 
-            dropdown.querySelectorAll('.dropdown-menu li').forEach(li => {
-                li.addEventListener('click', () => {
-                    dropdown.querySelector('span').innerText = li.innerText
-                    @this.set('page', li.getAttribute('id'));
-                })
-            })
+        dropdown.addEventListener('focusout', () => {
+            dropdown.classList.remove('active')
+            menu.classList.remove('dropdown-menu--active');
+            menu.style.maxHeight = 0;
+        })
 
+        dropdown.querySelectorAll('.dropdown-menu li').forEach(li => {
+            li.addEventListener('click', () => {
+                dropdown.querySelector('span').innerText = li.innerText
+            @this.set('page', li.getAttribute('id'));
+            })
         })
     </script>
-
+    @endscript
     <style>
         body {
             background: {{ $this->getConfig('theme.background') }};
