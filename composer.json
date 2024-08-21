@@ -7,7 +7,8 @@
     "require": {
         "php": "^8.2",
         "laravel/framework": "^11.9",
-        "laravel/tinker": "^2.9"
+        "laravel/tinker": "^2.9",
+        "monosniper/laravel-translatable": "dev-main"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
@@ -30,6 +31,12 @@
             "Tests\\": "tests/"
         }
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "../laravel-translatable"
+        }
+    ],
     "scripts": {
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
@@ -62,6 +69,5 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [ { "type" : "path", "url" : "packages" } ]
+    "prefer-stable": true
 }
